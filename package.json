@@ -1,11 +1,16 @@
 {
-    "name": "my-node-app",
-    "version": "1.0.0",
-    "description": "A simple Node.js app",
-    "main": "app.js",
-    "scripts": {
-      "start": "node app.js"
-    },
-    "author": "",
-    "license": "ISC"
+  "name": "your-project-name",
+  "version": "1.0.0",
+  "description": "Your project description",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"No build step required\"",
+    "start": "node index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    // your dependencies here
   }
+}
