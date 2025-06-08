@@ -10,7 +10,5 @@
   },
   "author": "Your Name",
   "license": "ISC",
-  "dependencies": {
-    // your dependencies here
-  }
+  "dependencies": {}
 }
