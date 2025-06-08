@@ -2,30 +2,26 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://github.com/divyajai12/Final-project-.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // run build commands, e.g., mvn clean install
+                // Add build commands here
+                // Example: bat 'mvn clean install' for a Maven build on Windows
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                // run test commands, e.g., mvn test
+                // Add test commands here
+                // Example: bat 'mvn test'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // deployment steps here
+                // Add deploy commands here
             }
         }
     }
