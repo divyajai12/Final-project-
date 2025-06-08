@@ -26,9 +26,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application with Docker Compose...'
-                bat 'docker-compose up -d'    // Start containers in detached mode
-                bat 'docker-compose ps'       // List running containers
-                // Optionally, add more deployment steps here
+                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" up -d'
+                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" ps'
             }
         }
     }
@@ -36,11 +35,11 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
-            bat 'docker-compose down'       // Clean up after success if desired
+            bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" down'
         }
         failure {
             echo 'Pipeline failed!'
-            bat 'docker-compose down'       // Clean up after failure to avoid dangling containers
+            bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" down'
         }
     }
 }
