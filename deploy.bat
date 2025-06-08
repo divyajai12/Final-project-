@@ -1,3 +1,8 @@
 @echo off
-echo Deploy step skipped: deploy.bat not configured yet.
-exit /b 0
+echo "Stopping and removing existing containers..."
+docker-compose down
+
+echo "Building and starting containers..."
+docker-compose up -d --build
+
+echo "Deployment finished."
