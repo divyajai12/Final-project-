@@ -56,8 +56,8 @@ pipeline {
 
                 script {
                     def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                    bat "docker-compose -f ${composeFile} up -d"
-                    bat "docker-compose -f ${composeFile} ps"
+                    bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} up -d"
+                    bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} ps"
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
             script {
                 def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                bat "docker-compose -f ${composeFile} down"
+                bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} down"
             }
             emailext(
                 subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -81,7 +81,7 @@ pipeline {
             echo 'Pipeline failed!'
             script {
                 def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                bat "docker-compose -f ${composeFile} down"
+                bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} down"
             }
             emailext(
                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
