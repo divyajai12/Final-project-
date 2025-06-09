@@ -8,6 +8,12 @@ pipeline {
             }
         }
 
+        stage('Check npm') {
+            steps {
+                bat 'npm --version'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building the project...'
@@ -26,8 +32,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application with Docker Compose...'
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" up -d'
-                bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" ps'
+                bat 'docker-compose up -d'
+                bat 'docker-compose ps'
             }
         }
     }
@@ -35,11 +41,11 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
-            bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" down'
+            bat 'docker-compose down'
         }
         failure {
             echo 'Pipeline failed!'
-            bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker-compose.exe" down'
+            bat 'docker-compose down'
         }
     }
 }
