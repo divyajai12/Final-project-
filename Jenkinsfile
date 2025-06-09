@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PATH = "C:\\Program Files\\nodejs\\;${env.PATH}"
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
