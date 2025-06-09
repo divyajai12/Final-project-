@@ -21,7 +21,7 @@ pipeline {
                 script {
                     def rawCommit = bat(returnStdout: true, script: '@echo off && git rev-parse --short HEAD').trim()
                     def lines = rawCommit.readLines()
-                    def gitCommit = lines[-1]  // last line should be the commit hash
+                    def gitCommit = lines[-1]
                     def buildNum = env.BUILD_NUMBER
                     env.APP_VERSION = "1.0.${buildNum}-${gitCommit}"
                     echo "App version: ${env.APP_VERSION}"
@@ -39,7 +39,11 @@ pipeline {
             steps {
                 echo "Building the project with version ${env.APP_VERSION}..."
                 bat 'npm install'
-                bat "set APP_VERSION=${env.APP_VERSION} && npm run build"
+                bat """
+                    @echo off
+                    set "APP_VERSION=${env.APP_VERSION}"
+                    npm run build
+                """
             }
         }
 
@@ -57,8 +61,16 @@ pipeline {
 
                 script {
                     def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                    bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} up -d"
-                    bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} ps"
+                    bat """
+                        @echo off
+                        set "APP_VERSION=${env.APP_VERSION}"
+                        docker-compose -f ${composeFile} up -d
+                    """
+                    bat """
+                        @echo off
+                        set "APP_VERSION=${env.APP_VERSION}"
+                        docker-compose -f ${composeFile} ps
+                    """
                 }
             }
         }
@@ -69,7 +81,11 @@ pipeline {
             echo 'Pipeline completed successfully!'
             script {
                 def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} down"
+                bat """
+                    @echo off
+                    set "APP_VERSION=${env.APP_VERSION}"
+                    docker-compose -f ${composeFile} down
+                """
             }
             emailext(
                 subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -82,7 +98,11 @@ pipeline {
             echo 'Pipeline failed!'
             script {
                 def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
-                bat "set APP_VERSION=${env.APP_VERSION} && docker-compose -f ${composeFile} down"
+                bat """
+                    @echo off
+                    set "APP_VERSION=${env.APP_VERSION}"
+                    docker-compose -f ${composeFile} down
+                """
             }
             emailext(
                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
