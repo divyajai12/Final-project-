@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        PATH = "C:\\Program Files\\nodejs\\;${env.PATH}"
-        APP_VERSION = ''  // will be set dynamically
+        PATH = "C:\\Program Files\\Git\\bin;C:\\Program Files\\nodejs\\;${env.PATH}"
+        APP_VERSION = ''
     }
 
     stages {
@@ -16,7 +16,6 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    // Get short git commit hash on Windows using bat + PowerShell
                     def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                     def buildNum = env.BUILD_NUMBER
                     env.APP_VERSION = "1.0.${buildNum}-${gitCommit}"
@@ -35,9 +34,6 @@ pipeline {
             steps {
                 echo "Building the project with version ${env.APP_VERSION}..."
                 bat 'npm install'
-
-                // You can pass version as an environment variable if your build script supports it
-                // Or update a file here if needed before build
                 bat "set APP_VERSION=${env.APP_VERSION} && npm run build"
             }
         }
@@ -52,10 +48,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploying application with Docker Compose, tagging image as ${env.APP_VERSION}..."
-                // Build Docker image with version tag
                 bat "docker build -t admin-app:${env.APP_VERSION} ."
-
-                // Run docker-compose with tagged image (adjust your docker-compose.yml accordingly!)
                 bat 'docker-compose up -d'
                 bat 'docker-compose ps'
             }
