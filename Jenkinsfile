@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Select environment to deploy')
+    }
+
     environment {
         PATH = "C:\\Program Files\\Git\\bin;C:\\Program Files\\nodejs\\;${env.PATH}"
         APP_VERSION = ''
@@ -47,10 +51,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo "Deploying application with Docker Compose, tagging image as ${env.APP_VERSION}..."
+                echo "Deploying application to ${params.ENVIRONMENT} with Docker Compose, tagging image as ${env.APP_VERSION}..."
                 bat "docker build -t admin-app:${env.APP_VERSION} ."
-                bat 'docker-compose up -d'
-                bat 'docker-compose ps'
+
+                // Use environment-specific docker-compose file
+                def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
+                bat "docker-compose -f ${composeFile} up -d"
+                bat "docker-compose -f ${composeFile} ps"
             }
         }
     }
@@ -58,7 +65,8 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
-            bat 'docker-compose down'
+            def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
+            bat "docker-compose -f ${composeFile} down"
             emailext(
                 subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "The pipeline completed successfully.\n\nCheck details: ${env.BUILD_URL}",
@@ -68,7 +76,8 @@ pipeline {
 
         failure {
             echo 'Pipeline failed!'
-            bat 'docker-compose down'
+            def composeFile = "docker-compose-${params.ENVIRONMENT}.yml"
+            bat "docker-compose -f ${composeFile} down"
             emailext(
                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "The pipeline failed.\n\nCheck details: ${env.BUILD_URL}",
