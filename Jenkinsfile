@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         PATH = "C:\\Program Files\\Git\\bin;C:\\Program Files\\nodejs\\;${env.PATH}"
-        APP_VERSION = ''
     }
 
     stages {
@@ -20,7 +19,9 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                    def rawCommit = bat(returnStdout: true, script: '@echo off && git rev-parse --short HEAD').trim()
+                    def lines = rawCommit.readLines()
+                    def gitCommit = lines[-1]  // last line should be the commit hash
                     def buildNum = env.BUILD_NUMBER
                     env.APP_VERSION = "1.0.${buildNum}-${gitCommit}"
                     echo "App version: ${env.APP_VERSION}"
