@@ -46,10 +46,21 @@ pipeline {
         success {
             echo 'Pipeline completed successfully!'
             bat 'docker-compose down'
+            emailext(
+                subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The pipeline completed successfully.\n\nCheck details: ${env.BUILD_URL}",
+                to: "divyajai207@gmail.com"  // <-- Replace this with your actual email if needed
+            )
         }
+
         failure {
             echo 'Pipeline failed!'
             bat 'docker-compose down'
+            emailext(
+                subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The pipeline failed.\n\nCheck details: ${env.BUILD_URL}",
+                to: "divyajai207@gmail.com"
+            )
         }
     }
 }
