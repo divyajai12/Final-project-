@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    image: admin-app:${APP_VERSION}
+    ports:
+      - "4000:3000"  # Use different host port for staging
+    environment:
+      - NODE_ENV=staging
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: staginguser
+      POSTGRES_PASSWORD: stagingpass
+      POSTGRES_DB: stagingdb
+    volumes:
+      - staging-db-data:/var/lib/postgresql/data
+
+volumes:
+  staging-db-data:

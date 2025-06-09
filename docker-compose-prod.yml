@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    image: admin-app:${APP_VERSION}
+    ports:
+      - "80:3000"  # Production usually exposes on port 80 (HTTP)
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+    deploy:
+      replicas: 3          # scale the app in production
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: produser
+      POSTGRES_PASSWORD: prodpass
+      POSTGRES_DB: proddb
+    volumes:
+      - prod-db-data:/var/lib/postgresql/data
+
+volumes:
+  prod-db-data:
